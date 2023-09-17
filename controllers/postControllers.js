@@ -15,3 +15,7 @@ exports.createPost = (req, res) => {
 			res.send(errors);
 		});
 };
+
+exports.viewSingle = (req, res) => {
+	res.render('single-post-screen');
+};
