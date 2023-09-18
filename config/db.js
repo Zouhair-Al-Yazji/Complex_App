@@ -1,8 +1,13 @@
 const dotenv = require('dotenv');
 dotenv.config();
-const { MongoClient } = require('mongodb');
+const { MongoClient, ServerApiVersion } = require('mongodb');
 
-const client = new MongoClient(process.env.DB_URI, {
+const client = new MongoClient(process.env.DB_URI2, {
+	serverApi: {
+		version: ServerApiVersion.v1,
+		strict: true,
+		deprecationErrors: true,
+	},
 	writeConcern: { w: 'majority', wtimeout: 0, provenance: 'clientSupplied' },
 });
 
