@@ -1,4 +1,6 @@
+'use strict';
 const User = require('../models/User');
+const Post = require('../models/Post');
 
 exports.mustBeLoggedIn = (req, res, next) => {
 	if (req.session.user) {
@@ -60,4 +62,30 @@ exports.home = (req, res) => {
 			regErrors: req.flash('regErrors'),
 		});
 	}
+};
+
+exports.ifUserExists = (req, res, next) => {
+	User.findByUsername(req.params.username)
+		.then((userDocument) => {
+			req.profileUser = userDocument;
+			next();
+		})
+		.catch(() => {
+			res.status(404).render('404');
+		});
+};
+
+exports.profilePostsScreen = (req, res) => {
+	// asks our post modal for posts by a certain author id
+	Post.findByAuthorId(req.profileUser._id)
+		.then((posts) => {
+			res.render('profile', {
+				posts: posts,
+				profileUsername: req.profileUser.username,
+				profileAvatar: req.profileUser.avatar,
+			});
+		})
+		.catch(() => {
+			res.status(404).render('404');
+		});
 };
