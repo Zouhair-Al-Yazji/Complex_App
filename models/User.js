@@ -1,3 +1,4 @@
+'use strict';
 const bcrypt = require('bcryptjs');
 const usersCollection = require('../config/db').db().collection('users');
 const validator = require('validator');
@@ -89,13 +90,17 @@ User.prototype.validate = function () {
 User.prototype.login = function () {
 	return new Promise(async (resolve, reject) => {
 		this.cleanUp();
-		const attemptedUser = await usersCollection.findOne({
+		let attemptedUser = await usersCollection.findOne({
 			username: this.data.username,
 		});
 
 		if (attemptedUser && bcrypt.compareSync(this.data.password, attemptedUser.password)) {
-			this.getAvatar();
-			resolve('congrats!!!');
+			attemptedUser = {
+				_id: attemptedUser._id,
+				username: attemptedUser.username,
+				avatar: attemptedUser.avatar,
+			};
+			resolve(attemptedUser);
 		} else {
 			reject('Invalid username / password.');
 		}
@@ -113,6 +118,8 @@ User.prototype.register = function () {
 			// Hash user password;
 			let salt = bcrypt.genSaltSync(10);
 			this.data.password = bcrypt.hashSync(this.data.password, salt);
+			this.getAvatar();
+			this.data.avatar = this.avatar;
 			await usersCollection.insertOne(this.data);
 			this.getAvatar();
 			resolve();

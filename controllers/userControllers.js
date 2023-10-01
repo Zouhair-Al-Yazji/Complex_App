@@ -15,11 +15,11 @@ exports.login = (req, res) => {
 	let user = new User(req.body);
 	user
 		.login()
-		.then(() => {
+		.then((foundUser) => {
 			req.session.user = {
-				avatar: user.avatar,
-				username: user.data.username,
-				_id: user.data._id,
+				avatar: foundUser.avatar,
+				username: foundUser.username,
+				_id: foundUser._id,
 			};
 			req.session.save(() => res.redirect('/'));
 		})

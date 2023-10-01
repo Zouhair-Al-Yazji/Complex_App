@@ -20,6 +20,13 @@ app.use(flash());
 
 // When we use app.use we tell the express to use that function on every request
 app.use(function (req, res, next) {
+	// make current user id available on the req object
+	if (req.session.user) {
+		req.visitorId = req.session.user._id;
+	} else {
+		req.visitorId = 0;
+	}
+
 	// The res.locals object is an object that can hold data that you want to make available to your view
 	// templates (e.g., when rendering HTML views).
 	res.locals.user = req.session.user;
